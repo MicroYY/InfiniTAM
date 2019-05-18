@@ -1,6 +1,7 @@
 // InfiniTAM: Surffuse. Copyright (c) Torr Vision Group and the authors of InfiniTAM, 2016.
 
 #pragma once
+#include <iostream>
 
 namespace ITMLib
 {
@@ -74,9 +75,9 @@ namespace ITMLib
      * \param useSurfelMerging_             Whether or not to use surfel merging.
      */
     explicit ITMSurfelSceneParams(float deltaRadius_, float gaussianConfidenceSigma_, float maxMergeAngle_, float maxMergeDist_, float maxSurfelRadius_,
-                                  float minRadiusOverlapFactor_, float stableSurfelConfidence_, int supersamplingFactor_, float trackingSurfelMaxDepth_,
-                                  float trackingSurfelMinConfidence_, int unstableSurfelPeriod_, int unstableSurfelZOffset_, bool useGaussianSampleConfidence_,
-                                  bool useSurfelMerging_)
+		float minRadiusOverlapFactor_, float stableSurfelConfidence_, int supersamplingFactor_, float trackingSurfelMaxDepth_,
+		float trackingSurfelMinConfidence_, int unstableSurfelPeriod_, int unstableSurfelZOffset_, bool useGaussianSampleConfidence_,
+		bool useSurfelMerging_)
     : deltaRadius(deltaRadius_),
       gaussianConfidenceSigma(gaussianConfidenceSigma_),
       maxMergeAngle(maxMergeAngle_),
@@ -91,6 +92,8 @@ namespace ITMLib
       unstableSurfelZOffset(unstableSurfelZOffset_),
       useGaussianSampleConfidence(useGaussianSampleConfidence_),
       useSurfelMerging(useSurfelMerging_)
-    {}
+	{
+		//std::cout << maxMergeDist << std::endl;
+	}
   };
 }

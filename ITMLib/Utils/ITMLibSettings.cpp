@@ -8,7 +8,8 @@ using namespace ORUtils;
 #include <cmath>
 
 ITMLibSettings::ITMLibSettings(void)
-:	sceneParams(0.02f, 100, 0.005f, 0.2f, 3.0f, false),
+//: sceneParams(0.02f, 100, 0.005f, 0.2f, 8.0f, false),
+	: sceneParams(0.3f, 10, 0.035f, 0.1f, 30.0f, false),
 	surfelSceneParams(0.5f, 0.6f, static_cast<float>(20 * M_PI / 180), 0.01f, 0.004f, 3.5f, 25.0f, 4, 1.0f, 5.0f, 20, 10000000, true, true)
 {
 	// skips every other point when using the colour renderer for creating a point cloud
@@ -53,9 +54,9 @@ ITMLibSettings::ITMLibSettings(void)
 
 	// Depth-only extended tracker:
 	trackerConfig = "type=extended,levels=rrbb,useDepth=1,minstep=1e-4,"
-					  "outlierSpaceC=0.1,outlierSpaceF=0.004,"
-					  "numiterC=20,numiterF=50,tukeyCutOff=8,"
-					  "framesToSkip=20,framesToWeight=50,failureDec=20.0";
+		"outlierSpaceC=0.1,outlierSpaceF=0.004,"
+		"numiterC=20,numiterF=50,tukeyCutOff=8,"
+		"framesToSkip=20,framesToWeight=50,failureDec=20.0";
 
 	//// For hybrid intensity+depth tracking:
 	//trackerConfig = "type=extended,levels=bbb,useDepth=1,useColour=1,"
@@ -72,7 +73,7 @@ ITMLibSettings::ITMLibSettings(void)
 	//trackerConfig = "type=extendedimu,levels=ttb,minstep=5e-4,outlierSpaceC=0.1,outlierSpaceF=0.004,numiterC=20,numiterF=5,tukeyCutOff=8,framesToSkip=20,framesToWeight=50,failureDec=20.0";
 
 	// Surfel tracking
-	if(libMode == LIBMODE_BASIC_SURFELS)
+	if (libMode == LIBMODE_BASIC_SURFELS)
 	{
 		trackerConfig = "extended,levels=rrbb,minstep=1e-4,outlierSpaceC=0.1,outlierSpaceF=0.004,numiterC=20,numiterF=20,tukeyCutOff=8,framesToSkip=0,framesToWeight=1,failureDec=20.0";
 	}
