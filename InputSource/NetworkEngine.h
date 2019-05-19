@@ -1,10 +1,7 @@
 #pragma once
 
-#ifndef COMPLIE_WITH_NETWORK
+#ifdef COMPILE_WITH_NETWORK
 
-
-
-#pragma comment(lib,"ws2_32.lib")
 
 
 #endif // COMPLIE_WITH_NETWORK
@@ -16,8 +13,8 @@ namespace InputSource {
 	class NetworkEngine :public BaseImageSourceEngine
 	{
 	private:
-		class PrivateData;
-		PrivateData* data;
+		//class PrivateData;
+		//PrivateData* data;
 		Vector2i imageSize_rgb, imageSize_d;
 	public:
 		NetworkEngine(const char* calibFilenamea);

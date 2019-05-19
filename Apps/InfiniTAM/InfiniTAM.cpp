@@ -14,6 +14,7 @@
 #include "../../InputSource/RealSense2Engine.h"
 #include "../../InputSource/FFMPEGReader.h"
 #include "../../InputSource/MynteyeEngine.h"
+#include "../../InputSource/NetworkEngine.h"
 #include "../../ITMLib/ITMLibDefines.h"
 #include "../../ITMLib/Core/ITMBasicEngine.h"
 #include "../../ITMLib/Core/ITMBasicSurfelEngine.h"
@@ -154,6 +155,17 @@ static void CreateDefaultImageSource(ImageSourceEngine* & imageSource, IMUSource
 	{
 		printf("trying Mynteye device\n");
 		imageSource = new MynteyeEngine(calibFile);
+		if (imageSource->getDepthImageSize().x == 0)
+		{
+			delete imageSource;
+			imageSource = NULL;
+		}
+	}
+
+	if (imageSource == NULL)
+	{
+		printf("trying Network data acquisition\n");
+		imageSource = new NetworkEngine(calibFile);
 		if (imageSource->getDepthImageSize().x == 0)
 		{
 			delete imageSource;

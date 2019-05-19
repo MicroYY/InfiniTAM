@@ -65,7 +65,7 @@ bool MynteyeEngine::hasMoreImages(void) const
 
 
 
-void InputSource::MynteyeEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthImage)
+void MynteyeEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthImage)
 {
 	short* rawDepth = rawDepthImage->GetData(MEMORYDEVICE_CPU);
 	Vector4u* rgb = rgbImage->GetData(MEMORYDEVICE_CPU);
@@ -127,5 +127,29 @@ Vector2i MynteyeEngine::getRGBImageSize(void) const
 
 
 #else
+using namespace InputSource;
 
+MynteyeEngine::MynteyeEngine(const char* calibfilename)
+	:BaseImageSourceEngine(calibfilename)
+{
+	printf("compiled withour MYNTEYE SDK support\n");
+}
+MynteyeEngine::~MynteyeEngine()
+{}
+void MynteyeEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthImage)
+{
+	return;
+}
+bool MynteyeEngine::hasMoreImages() const
+{
+	return false;
+}
+Vector2i MynteyeEngine::getDepthImageSize() const
+{
+	return Vector2i(0, 0);
+}
+Vector2i MynteyeEngine::getRGBImageSize() const
+{
+	return Vector2i(0, 0);
+}
 #endif // COMPILE_WITH_MYNTEYE
