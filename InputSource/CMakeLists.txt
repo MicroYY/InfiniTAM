@@ -43,6 +43,8 @@ ImageSourceEngine.cpp
 IMUSourceEngine.cpp
 Kinect2Engine.cpp
 LibUVCEngine.cpp
+MynteyeEngine.cpp
+NetworkEngine.cpp
 OpenNIEngine.cpp
 PicoFlexxEngine.cpp
 RealSenseEngine.cpp
@@ -58,6 +60,8 @@ ImageSourceEngine.h
 IMUSourceEngine.h
 Kinect2Engine.h
 LibUVCEngine.h
+MynteyeEngine.h
+NetworkEngine.h
 OpenNIEngine.h
 PicoFlexxEngine.h
 RealSenseEngine.h
