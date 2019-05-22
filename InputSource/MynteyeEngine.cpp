@@ -23,6 +23,7 @@ MynteyeEngine::MynteyeEngine(const char * calibFilename)
 	data = new PrivateData();
 
 	if (!mynteyed::util::select(data->cam, &data->dev_info)) {
+		std::cout << "No device found!" << std::endl;
 		return;
 	}
 	mynteyed::util::print_stream_infos(data->cam, data->dev_info.index);
@@ -132,7 +133,7 @@ using namespace InputSource;
 MynteyeEngine::MynteyeEngine(const char* calibfilename)
 	:BaseImageSourceEngine(calibfilename)
 {
-	printf("compiled withour MYNTEYE SDK support\n");
+	printf("compiled without MYNTEYE SDK support\n");
 }
 MynteyeEngine::~MynteyeEngine()
 {}

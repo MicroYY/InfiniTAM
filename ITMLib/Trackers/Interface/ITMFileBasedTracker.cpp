@@ -21,7 +21,7 @@ bool ITMFileBasedTracker::CanKeepTracking() const
 void ITMFileBasedTracker::TrackCamera(ITMTrackingState *trackingState, const ITMView *view)
 {
 	trackingState->trackerResult = ITMTrackingState::TRACKING_FAILED;
-
+	
 	// Try to open the file
 	std::ifstream poseFile(GetCurrentFilename().c_str());
 

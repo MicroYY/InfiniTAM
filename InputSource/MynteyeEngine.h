@@ -1,5 +1,5 @@
 #pragma once
-//test
+
 #ifdef COMPILE_WITH_MYNTEYE
 #include <mynteyed/camera.h>
 #include <mynteyed/utils.h>

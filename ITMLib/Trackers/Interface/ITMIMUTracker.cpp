@@ -17,6 +17,6 @@ ITMIMUTracker::~ITMIMUTracker(void)
 void ITMIMUTracker::TrackCamera(ITMTrackingState *trackingState, const ITMView *view)
 {
 	calibrator->RegisterMeasurement(((ITMViewIMU*)view)->imu->R);
-
+	
 	trackingState->pose_d->SetR(calibrator->GetDifferentialRotationChange() * trackingState->pose_d->GetR());
 }

@@ -616,7 +616,7 @@ void UIEngine::ProcessFrame()
 		if (!imuSource->hasMoreMeasurements()) return;
 		else imuSource->getMeasurement(inputIMUMeasurement);
 	}
-
+	
 	if (isRecording)
 	{
 		char str[250];
@@ -647,6 +647,7 @@ void UIEngine::ProcessFrame()
 	else trackerResult = mainEngine->ProcessFrame(inputRGBImage, inputRawDepthImage);
 
 	trackingResult = (int)trackerResult;
+	
 
 #ifndef COMPILE_WITHOUT_CUDA
 	ORcudaSafeCall(cudaThreadSynchronize());

@@ -11,32 +11,33 @@
 
 #include "../../ORUtils/NVTimer.h"
 #include "../../ORUtils/FileUtils.h"
+//#include "../../ORUtils/Matrix.h"
 
 //#define OUTPUT_TRAJECTORY_QUATERNIONS
 
 using namespace ITMLib;
 
 template <typename TVoxel, typename TIndex>
-ITMBasicEngine<TVoxel,TIndex>::ITMBasicEngine(const ITMLibSettings *settings, const ITMRGBDCalib& calib, Vector2i imgSize_rgb, Vector2i imgSize_d)
+ITMBasicEngine<TVoxel, TIndex>::ITMBasicEngine(const ITMLibSettings *settings, const ITMRGBDCalib& calib, Vector2i imgSize_rgb, Vector2i imgSize_d)
 {
 	this->settings = settings;
 
 	if ((imgSize_d.x == -1) || (imgSize_d.y == -1)) imgSize_d = imgSize_rgb;
 
 	MemoryDeviceType memoryType = settings->GetMemoryType();
-	this->scene = new ITMScene<TVoxel,TIndex>(&settings->sceneParams, settings->swappingMode == ITMLibSettings::SWAPPINGMODE_ENABLED, memoryType);
+	this->scene = new ITMScene<TVoxel, TIndex>(&settings->sceneParams, settings->swappingMode == ITMLibSettings::SWAPPINGMODE_ENABLED, memoryType);
 
 	const ORUtils::DeviceType deviceType = settings->deviceType;
 
 	lowLevelEngine = ITMLowLevelEngineFactory::MakeLowLevelEngine(deviceType);
 	viewBuilder = ITMViewBuilderFactory::MakeViewBuilder(calib, deviceType);
-	visualisationEngine = ITMVisualisationEngineFactory::MakeVisualisationEngine<TVoxel,TIndex>(deviceType);
+	visualisationEngine = ITMVisualisationEngineFactory::MakeVisualisationEngine<TVoxel, TIndex>(deviceType);
 
 	meshingEngine = NULL;
 	if (settings->createMeshingEngine)
-		meshingEngine = ITMMeshingEngineFactory::MakeMeshingEngine<TVoxel,TIndex>(deviceType);
+		meshingEngine = ITMMeshingEngineFactory::MakeMeshingEngine<TVoxel, TIndex>(deviceType);
 
-	denseMapper = new ITMDenseMapper<TVoxel,TIndex>(settings);
+	denseMapper = new ITMDenseMapper<TVoxel, TIndex>(settings);
 	denseMapper->ResetScene(scene);
 
 	imuCalibrator = new ITMIMUCalibrator_iPad();
@@ -52,7 +53,7 @@ ITMBasicEngine<TVoxel,TIndex>::ITMBasicEngine(const ITMLibSettings *settings, co
 	tracker->UpdateInitialPose(trackingState);
 
 	view = NULL; // will be allocated by the view builder
-	
+
 	if (settings->behaviourOnFailure == settings->FAILUREMODE_RELOCALISE)
 		relocaliser = new FernRelocLib::Relocaliser<float>(imgSize_d, Vector2f(settings->sceneParams.viewFrustum_min, settings->sceneParams.viewFrustum_max), 0.2f, 500, 4);
 	else relocaliser = NULL;
@@ -68,7 +69,7 @@ ITMBasicEngine<TVoxel,TIndex>::ITMBasicEngine(const ITMLibSettings *settings, co
 }
 
 template <typename TVoxel, typename TIndex>
-ITMBasicEngine<TVoxel,TIndex>::~ITMBasicEngine()
+ITMBasicEngine<TVoxel, TIndex>::~ITMBasicEngine()
 {
 	delete renderState_live;
 	if (renderState_freeview != NULL) delete renderState_freeview;
@@ -96,7 +97,7 @@ ITMBasicEngine<TVoxel,TIndex>::~ITMBasicEngine()
 }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::SaveSceneToMesh(const char *objFileName)
+void ITMBasicEngine<TVoxel, TIndex>::SaveSceneToMesh(const char *objFileName)
 {
 	if (meshingEngine == NULL) return;
 
@@ -115,7 +116,7 @@ void ITMBasicEngine<TVoxel, TIndex>::SaveToFile()
 
 	std::string saveOutputDirectory = "State/";
 	std::string relocaliserOutputDirectory = saveOutputDirectory + "Relocaliser/", sceneOutputDirectory = saveOutputDirectory + "Scene/";
-	
+
 	MakeDir(saveOutputDirectory.c_str());
 	MakeDir(relocaliserOutputDirectory.c_str());
 	MakeDir(sceneOutputDirectory.c_str());
@@ -142,7 +143,7 @@ void ITMBasicEngine<TVoxel, TIndex>::LoadFromFile()
 
 		relocaliser_temp->LoadFromDirectory(relocaliserInputDirectory);
 
-		delete relocaliser; 
+		delete relocaliser;
 		relocaliser = relocaliser_temp;
 	}
 	catch (std::runtime_error &e)
@@ -162,7 +163,7 @@ void ITMBasicEngine<TVoxel, TIndex>::LoadFromFile()
 }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::resetAll()
+void ITMBasicEngine<TVoxel, TIndex>::resetAll()
 {
 	denseMapper->ResetScene(scene);
 	trackingState->Reset();
@@ -173,20 +174,20 @@ static int QuaternionFromRotationMatrix_variant(const double *matrix)
 {
 	int variant = 0;
 	if
-		((matrix[4]>-matrix[8]) && (matrix[0]>-matrix[4]) && (matrix[0]>-matrix[8]))
+		((matrix[4] > -matrix[8]) && (matrix[0] > -matrix[4]) && (matrix[0] > -matrix[8]))
 	{
 		variant = 0;
 	}
-	else if ((matrix[4]<-matrix[8]) && (matrix[0]>
-		matrix[4]) && (matrix[0]> matrix[8])) {
+	else if ((matrix[4] < -matrix[8]) && (matrix[0] >
+		matrix[4]) && (matrix[0] > matrix[8])) {
 		variant = 1;
 	}
-	else if ((matrix[4]> matrix[8]) && (matrix[0]<
-		matrix[4]) && (matrix[0]<-matrix[8])) {
+	else if ((matrix[4] > matrix[8]) && (matrix[0] <
+		matrix[4]) && (matrix[0] < -matrix[8])) {
 		variant = 2;
 	}
-	else if ((matrix[4]<
-		matrix[8]) && (matrix[0]<-matrix[4]) && (matrix[0]< matrix[8])) {
+	else if ((matrix[4] <
+		matrix[8]) && (matrix[0] < -matrix[4]) && (matrix[0] < matrix[8])) {
 		variant = 3;
 	}
 	return variant;
@@ -242,7 +243,7 @@ static void QuaternionFromRotationMatrix(const double *matrix, double *q) {
 #endif
 
 template <typename TVoxel, typename TIndex>
-ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel,TIndex>::ProcessFrame(ORUChar4Image *rgbImage, ORShortImage *rawDepthImage, ITMIMUMeasurement *imuMeasurement)
+ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel, TIndex>::ProcessFrame(ORUChar4Image *rgbImage, ORShortImage *rawDepthImage, ITMIMUMeasurement *imuMeasurement)
 {
 	// prepare image and turn it into a depth image
 	if (imuMeasurement == NULL) viewBuilder->UpdateView(&view, rgbImage, rawDepthImage, settings->useBilateralFilter);
@@ -253,6 +254,42 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel,TIndex>::ProcessFrame(ORU
 	// tracking
 	ORUtils::SE3Pose oldPose(*(trackingState->pose_d));
 	if (trackingActive) trackingController->Track(trackingState, view);
+
+
+#ifdef POSE_FROM_NETWORK
+
+	HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FILE_MAP_READ, "pose");
+	float* pose = (float*)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, 0);
+
+	Matrix4f transformation;
+	float q0 = pose[3];
+	float q1 = pose[0];
+	float q2 = pose[1];
+	float q3 = pose[2];
+
+	transformation.m00 = 1 - 2 * q2 * q2 - 2 * q3 * q3;
+	transformation.m01 = 2 * q1 * q2 - 2 * q0 * q3;
+	transformation.m02 = 2 * q1 * q3 + 2 * q0 * q2;
+	transformation.m03 = pose[4];
+
+	transformation.m10 = 2 * q1 * q2 + 2 * q0 * q3;
+	transformation.m11 = 1 - 2 * q1 * q1 - 2 * q3 * q3;
+	transformation.m12 = 2 * q2 * q3 - 2 * q0 * q1;
+	transformation.m13 = pose[5];
+
+	transformation.m20 = 2 * q1 * q3 - 2 * q0 * q2;
+	transformation.m21 = 2 * q2 * q3 + 2 * q0 * q1;
+	transformation.m22 = 1 - 2 * q1 * q1 - 2 * q2 * q2;
+	transformation.m23 = pose[6];
+
+	transformation.m30 = 0;
+	transformation.m31 = 0;
+	transformation.m32 = 0;
+	transformation.m33 = 1;
+	
+	trackingState->pose_d->SetM(transformation);
+	//printf("\n123456\n");
+#endif // POSE_FROM_NETWORK
 
 	ITMTrackingState::TrackingResult trackerResult = ITMTrackingState::TRACKING_GOOD;
 	switch (settings->behaviourOnFailure) {
@@ -292,7 +329,7 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel,TIndex>::ProcessFrame(ORU
 			trackingState->pose_d->SetFrom(&keyframe.pose);
 
 			denseMapper->UpdateVisibleList(view, trackingState, scene, renderState_live, true);
-			trackingController->Prepare(trackingState, scene, view, visualisationEngine, renderState_live); 
+			trackingController->Prepare(trackingState, scene, view, visualisationEngine, renderState_live);
 			trackingController->Track(trackingState, view);
 
 			trackerResult = trackingState->trackerResult;
@@ -337,18 +374,18 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel,TIndex>::ProcessFrame(ORU
 	QuaternionFromRotationMatrix(R, q);
 	fprintf(stderr, "%f %f %f %f %f %f %f\n", t[0], t[1], t[2], q[1], q[2], q[3], q[0]);
 #endif
-    
-    return trackerResult;
+
+	return trackerResult;
 }
 
 template <typename TVoxel, typename TIndex>
-Vector2i ITMBasicEngine<TVoxel,TIndex>::GetImageSize(void) const
+Vector2i ITMBasicEngine<TVoxel, TIndex>::GetImageSize(void) const
 {
 	return renderState_live->raycastImage->noDims;
 }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::GetImage(ORUChar4Image *out, GetImageType getImageType, ORUtils::SE3Pose *pose, ITMIntrinsics *intrinsics)
+void ITMBasicEngine<TVoxel, TIndex>::GetImage(ORUChar4Image *out, GetImageType getImageType, ORUtils::SE3Pose *pose, ITMIntrinsics *intrinsics)
 {
 	if (view == NULL) return;
 
@@ -372,7 +409,7 @@ void ITMBasicEngine<TVoxel,TIndex>::GetImage(ORUChar4Image *out, GetImageType ge
 	case ITMBasicEngine::InfiniTAM_IMAGE_COLOUR_FROM_VOLUME:
 	case ITMBasicEngine::InfiniTAM_IMAGE_COLOUR_FROM_NORMAL:
 	case ITMBasicEngine::InfiniTAM_IMAGE_COLOUR_FROM_CONFIDENCE:
-		{
+	{
 		// use current raycast or forward projection?
 		IITMVisualisationEngine::RenderRaycastSelection raycastType;
 		if (trackingState->age_pointCloud <= 0) raycastType = IITMVisualisationEngine::RENDER_FROM_OLD_RAYCAST;
@@ -406,7 +443,7 @@ void ITMBasicEngine<TVoxel,TIndex>::GetImage(ORUChar4Image *out, GetImageType ge
 		else out->SetFrom(srcImage, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
 
 		break;
-		}
+	}
 	case ITMBasicEngine::InfiniTAM_IMAGE_FREECAMERA_SHADED:
 	case ITMBasicEngine::InfiniTAM_IMAGE_FREECAMERA_COLOUR_FROM_VOLUME:
 	case ITMBasicEngine::InfiniTAM_IMAGE_FREECAMERA_COLOUR_FROM_NORMAL:
@@ -437,19 +474,19 @@ void ITMBasicEngine<TVoxel,TIndex>::GetImage(ORUChar4Image *out, GetImageType ge
 }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::turnOnTracking() { trackingActive = true; }
+void ITMBasicEngine<TVoxel, TIndex>::turnOnTracking() { trackingActive = true; }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::turnOffTracking() { trackingActive = false; }
+void ITMBasicEngine<TVoxel, TIndex>::turnOffTracking() { trackingActive = false; }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::turnOnIntegration() { fusionActive = true; }
+void ITMBasicEngine<TVoxel, TIndex>::turnOnIntegration() { fusionActive = true; }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::turnOffIntegration() { fusionActive = false; }
+void ITMBasicEngine<TVoxel, TIndex>::turnOffIntegration() { fusionActive = false; }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::turnOnMainProcessing() { mainProcessingActive = true; }
+void ITMBasicEngine<TVoxel, TIndex>::turnOnMainProcessing() { mainProcessingActive = true; }
 
 template <typename TVoxel, typename TIndex>
-void ITMBasicEngine<TVoxel,TIndex>::turnOffMainProcessing() { mainProcessingActive = false; }
+void ITMBasicEngine<TVoxel, TIndex>::turnOffMainProcessing() { mainProcessingActive = false; }

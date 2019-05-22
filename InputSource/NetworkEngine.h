@@ -13,11 +13,11 @@ namespace InputSource {
 	class NetworkEngine :public BaseImageSourceEngine
 	{
 	private:
-		//class PrivateData;
-		//PrivateData* data;
+		class PrivateData;
+		PrivateData* data;
 		Vector2i imageSize_rgb, imageSize_d;
 	public:
-		NetworkEngine(const char* calibFilenamea);
+		NetworkEngine(const char* calibFilename);
 		~NetworkEngine();
 
 		bool hasMoreImages() const;
