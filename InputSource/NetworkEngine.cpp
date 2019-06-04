@@ -38,16 +38,16 @@ NetworkEngine::NetworkEngine(const char * calibFilename)
 		return;
 	}
 	//system("pause");
-
+	Sleep(2000);
 	data = new PrivateData();
-	data->hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FILE_MAP_READ, data->szName);
+	data->hMapFile = OpenFileMapping(FILE_MAP_READ, FILE_MAP_READ, data->szName);
 	data->lpbase = MapViewOfFile(data->hMapFile, FILE_MAP_READ, 0, 0, 0);
 
 	this->calib.disparityCalib.SetStandard();
 	this->imageSize_d = Vector2i(640, 480);
 	this->imageSize_rgb = Vector2i(640, 480);
 	this->calib.intrinsics_d = this->calib.intrinsics_rgb;
-	
+	 
 }
 
 NetworkEngine::~NetworkEngine()
@@ -62,28 +62,30 @@ bool NetworkEngine::hasMoreImages() const
 
 void NetworkEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthImage)
 {
+	std::cout << "12345" << std::endl;
 	short* rawDepth = rawDepthImage->GetData(MEMORYDEVICE_CPU);
 	Vector4u* rgb = rgbImage->GetData(MEMORYDEVICE_CPU);
-
+	std::cout << "12345" << std::endl;
 	//Vector2i noDims = rawDepthImage->noDims;
 
 	uchar* imageColor = (uchar*)malloc(sizeof(uchar) * 640 * 480 * 3);
 	memcpy(imageColor, (uchar*)data->lpbase, sizeof(uchar) * 640 * 480 * 3);
+	std::cout << "12345" << std::endl;
 	uchar* imageDepth = (uchar*)malloc(sizeof(uchar) * 640 * 480 * 3);
 	memcpy(imageDepth, (uchar*)data->lpbase + 640 * 480 * 3, sizeof(uchar) * 640 * 480 * 3);
-
+	
 	for (size_t i = 0; i < rgbImage->noDims.height; i++)
 	{
 		for (size_t j = 0; j < rgbImage->noDims.width; j++)
 		{
 			unsigned int index = i * rgbImage->noDims.width + j;
-			rgb[index].x = imageColor[index * 3 + 0];
+			rgb[index].z = imageColor[index * 3 + 0];
 			rgb[index].y = imageColor[index * 3 + 1];
-			rgb[index].z = imageColor[index * 3 + 2];
+			rgb[index].x = imageColor[index * 3 + 2];
 			rgb[index].w = 255;
 		}
 	}
-
+	
 	for (size_t i = 0; i < rawDepthImage->noDims.height; i++)
 	{
 		for (size_t j = 0; j < rawDepthImage->noDims.width; j++)
@@ -94,6 +96,7 @@ void NetworkEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthI
 	}
 	free(imageColor);
 	free(imageDepth);
+	
 }
 
 Vector2i NetworkEngine::getDepthImageSize() const

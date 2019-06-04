@@ -22,7 +22,6 @@ namespace ITMLib
 	public:
 		void Track(ITMTrackingState *trackingState, const ITMView *view)
 		{
-			
 			tracker->TrackCamera(trackingState, view);
 		}
 

@@ -253,43 +253,13 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel, TIndex>::ProcessFrame(OR
 
 	// tracking
 	ORUtils::SE3Pose oldPose(*(trackingState->pose_d));
-	if (trackingActive) trackingController->Track(trackingState, view);
+	if (trackingActive) 
+		trackingController->Track(trackingState, view);
+
+	std::cout << *trackingState->pose_d << std::endl;
 
 
-#ifdef POSE_FROM_NETWORK
 
-	HANDLE hMapFile = OpenFileMapping(FILE_MAP_ALL_ACCESS, FILE_MAP_READ, "pose");
-	float* pose = (float*)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, 0);
-
-	Matrix4f transformation;
-	float q0 = pose[3];
-	float q1 = pose[0];
-	float q2 = pose[1];
-	float q3 = pose[2];
-
-	transformation.m00 = 1 - 2 * q2 * q2 - 2 * q3 * q3;
-	transformation.m01 = 2 * q1 * q2 - 2 * q0 * q3;
-	transformation.m02 = 2 * q1 * q3 + 2 * q0 * q2;
-	transformation.m03 = pose[4];
-
-	transformation.m10 = 2 * q1 * q2 + 2 * q0 * q3;
-	transformation.m11 = 1 - 2 * q1 * q1 - 2 * q3 * q3;
-	transformation.m12 = 2 * q2 * q3 - 2 * q0 * q1;
-	transformation.m13 = pose[5];
-
-	transformation.m20 = 2 * q1 * q3 - 2 * q0 * q2;
-	transformation.m21 = 2 * q2 * q3 + 2 * q0 * q1;
-	transformation.m22 = 1 - 2 * q1 * q1 - 2 * q2 * q2;
-	transformation.m23 = pose[6];
-
-	transformation.m30 = 0;
-	transformation.m31 = 0;
-	transformation.m32 = 0;
-	transformation.m33 = 1;
-	
-	trackingState->pose_d->SetM(transformation);
-	//printf("\n123456\n");
-#endif // POSE_FROM_NETWORK
 
 	ITMTrackingState::TrackingResult trackerResult = ITMTrackingState::TRACKING_GOOD;
 	switch (settings->behaviourOnFailure) {
@@ -374,7 +344,7 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel, TIndex>::ProcessFrame(OR
 	QuaternionFromRotationMatrix(R, q);
 	fprintf(stderr, "%f %f %f %f %f %f %f\n", t[0], t[1], t[2], q[1], q[2], q[3], q[0]);
 #endif
-
+	printf("%d\n",framesProcessed);
 	return trackerResult;
 }
 

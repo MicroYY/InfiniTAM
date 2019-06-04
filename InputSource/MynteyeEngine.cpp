@@ -74,6 +74,7 @@ void MynteyeEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthI
 	Vector2i noDims = rawDepthImage->noDims;
 	auto left_color = data->cam.GetStreamData(mynteyed::ImageType::IMAGE_LEFT_COLOR);
 	if (left_color.img) {
+		/*
 		const uint8_t *color_frame = left_color.img->data();
 		for (size_t i = 0; i < rgbImage->noDims.x * rgbImage->noDims.y * 2; i+=4)
 		{
@@ -99,6 +100,16 @@ void MynteyeEngine::getImages(ORUChar4Image * rgbImage, ORShortImage * rawDepthI
 			rgb[i / 2 + 1].y = g;
 			rgb[i / 2 + 1].z = r;
 			rgb[i / 2 + 1].w = 255;
+		}
+		*/
+
+		cv::Mat left = left_color.img->To(mynteyed::ImageFormat::COLOR_RGB)->ToMat();
+		for (size_t i = 0; i < rgbImage->noDims.x * rgbImage->noDims.y; i++)
+		{
+			rgb[i].x = left.data[i * 3 + 0];
+			rgb[i].y = left.data[i * 3 + 1];
+			rgb[i].z = left.data[i * 3 + 2];
+			rgb[i].w = 255;
 		}
 		
 	}

@@ -3,8 +3,10 @@
 #ifdef COMPILE_WITH_MYNTEYE
 #include <mynteyed/camera.h>
 #include <mynteyed/utils.h>
+#include <opencv2/opencv.hpp>
 
 #pragma comment(lib, "mynteye_depth.lib")
+#pragma comment(lib, "opencv_core320.lib")
 #endif // COMPILE_WITH_MYNTEYE
 
 #include "ImageSourceEngine.h"
