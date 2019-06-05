@@ -415,7 +415,7 @@ void ITMExtendedTracker::TrackCamera(ITMTrackingState *trackingState, const ITMV
 		trackingState->trackerResult = ITMTrackingState::TRACKING_GOOD;
 		return;
 	}
-
+	
 	if (trackingState->age_pointCloud >= 0) trackingState->framesProcessed++;
 	else trackingState->framesProcessed = 0;
 

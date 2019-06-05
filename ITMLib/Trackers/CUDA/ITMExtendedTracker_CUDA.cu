@@ -105,6 +105,7 @@ ITMExtendedTracker_CUDA::~ITMExtendedTracker_CUDA(void)
 
 int ITMExtendedTracker_CUDA::ComputeGandH_Depth(float &f, float *nabla, float *hessian, Matrix4f approxInvPose)
 {
+	printf("123123\n");
 	Vector2i sceneImageSize = sceneHierarchyLevel_Depth->pointsMap->noDims;
 	Vector2i viewImageSize = viewHierarchyLevel_Depth->depth->noDims;
 
