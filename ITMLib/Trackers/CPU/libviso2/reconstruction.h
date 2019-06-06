@@ -52,7 +52,7 @@ public:
   // set calibration parameters (intrinsics), must be called at least once
   // input: f ....... focal length (assumes fu=fv)
   //        cu,cv ... principal point
-  void setCalibration (FLOAT f,FLOAT cu,FLOAT cv);
+  void setCalibration (DOUBLE f,DOUBLE cu,DOUBLE cv);
   
   // takes a set of monocular feature matches (flow method) and the egomotion
   // estimate between the 2 frames Tr, tries to associate the features with previous
@@ -90,7 +90,7 @@ private:
   double  pointDistance(const track &t,point3d &p);
   double  rayAngle(const track &t,point3d &p);
   int32_t pointType(const track &t,point3d &p);
-  result  updatePoint(const track &t,point3d &p,const FLOAT &step_size,const FLOAT &eps);
+  result  updatePoint(const track &t,point3d &p,const DOUBLE &step_size,const DOUBLE &eps);
   void    computeObservations(const std::vector<point2d> &p);
   bool    computePredictionsAndJacobian(const std::vector<Matrix>::iterator &P_begin,const std::vector<Matrix>::iterator &P_end,point3d &p);
   void    testJacobian();
@@ -104,8 +104,8 @@ private:
   std::vector<Matrix>  P_total;
   std::vector<point3d> points;
   
-  FLOAT *J;                     // jacobian
-  FLOAT *p_observe,*p_predict;  // observed and predicted 2d points
+  DOUBLE *J;                     // jacobian
+  DOUBLE *p_observe,*p_predict;  // observed and predicted 2d points
 
 };
 

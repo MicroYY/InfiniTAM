@@ -1504,7 +1504,7 @@ void Matcher::refinement (vector<Matcher::p_match> &p_matched,int32_t method) {
   p_matched.clear();
   
   // create matrices for least square fitting
-  FLOAT A_data[9*6] = { 1, 1, 1,-1,-1, 1,
+  DOUBLE A_data[9*6] = { 1, 1, 1,-1,-1, 1,
                         0, 1, 0, 0,-1, 1,
                         1, 1,-1, 1,-1, 1,
                         1, 0, 0,-1, 0, 1,

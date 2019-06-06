@@ -37,11 +37,11 @@ Reconstruction::Reconstruction () {
 Reconstruction::~Reconstruction () {
 }
 
-void Reconstruction::setCalibration (FLOAT f,FLOAT cu,FLOAT cv) {
-  FLOAT K_data[9]       = {f,0,cu,0,f,cv,0,0,1};
+void Reconstruction::setCalibration (DOUBLE f,DOUBLE cu,DOUBLE cv) {
+  DOUBLE K_data[9]       = {f,0,cu,0,f,cv,0,0,1};
   K                     = Matrix(3,3,K_data);
-  FLOAT cam_pitch       = -0.08;
-  FLOAT cam_height      = 1.6;
+  DOUBLE cam_pitch       = -0.08;
+  DOUBLE cam_height      = 1.6;
   Tr_cam_road           = Matrix(4,4);
   Tr_cam_road.val[0][0] = 1;
   Tr_cam_road.val[1][1] = +cos(cam_pitch);
@@ -184,9 +184,9 @@ bool Reconstruction::initPoint(const track &t,point3d &p) {
 bool Reconstruction::refinePoint(const track &t,point3d &p) {
   
   int32_t num_frames = t.pixels.size();
-  J         = new FLOAT[6*num_frames];
-  p_observe = new FLOAT[2*num_frames];
-  p_predict = new FLOAT[2*num_frames];
+  J         = new DOUBLE[6*num_frames];
+  p_observe = new DOUBLE[2*num_frames];
+  p_predict = new DOUBLE[2*num_frames];
  
   int32_t iter=0;
   Reconstruction::result result = UPDATED;
@@ -223,8 +223,8 @@ double Reconstruction::rayAngle(const track &t,point3d &p) {
   pt.val[2][0] = p.z;
   Matrix v1 = c1-pt;
   Matrix v2 = c2-pt;
-  FLOAT  n1 = v1.l2norm();
-  FLOAT  n2 = v2.l2norm();
+  DOUBLE  n1 = v1.l2norm();
+  DOUBLE  n2 = v2.l2norm();
   if (n1<1e-10 || n2<1e-10)
     return 1000;
   v1 = v1/n1;
@@ -260,7 +260,7 @@ int32_t Reconstruction::pointType(const track &t,point3d &p) {
   return 2;
 }
 
-Reconstruction::result Reconstruction::updatePoint(const track &t,point3d &p,const FLOAT &step_size,const FLOAT &eps) {
+Reconstruction::result Reconstruction::updatePoint(const track &t,point3d &p,const DOUBLE &step_size,const DOUBLE &eps) {
   
   // number of frames
   int32_t num_frames = t.pixels.size();
@@ -282,12 +282,12 @@ Reconstruction::result Reconstruction::updatePoint(const track &t,point3d &p,con
   // fill matrices A and B
   for (int32_t m=0; m<3; m++) {
     for (int32_t n=0; n<3; n++) {
-      FLOAT a = 0;
+      DOUBLE a = 0;
       for (int32_t i=0; i<2*num_frames; i++)
         a += J[i*3+m]*J[i*3+n];
       A.val[m][n] = a;
     }
-    FLOAT b = 0;
+	DOUBLE b = 0;
     for (int32_t i=0; i<2*num_frames; i++)
       b += J[i*3+m]*(p_observe[i]-p_predict[i]);
     B.val[m][0] = b;
@@ -320,10 +320,10 @@ bool Reconstruction::computePredictionsAndJacobian(const vector<Matrix>::iterato
   for (vector<Matrix>::iterator P=P_begin; P<=P_end; P++) {
     
     // precompute coefficients
-    FLOAT a  = P->val[0][0]*p.x+P->val[0][1]*p.y+P->val[0][2]*p.z+P->val[0][3];
-    FLOAT b  = P->val[1][0]*p.x+P->val[1][1]*p.y+P->val[1][2]*p.z+P->val[1][3];
-    FLOAT c  = P->val[2][0]*p.x+P->val[2][1]*p.y+P->val[2][2]*p.z+P->val[2][3];
-    FLOAT cc = c*c;
+    DOUBLE a  = P->val[0][0]*p.x+P->val[0][1]*p.y+P->val[0][2]*p.z+P->val[0][3];
+    DOUBLE b  = P->val[1][0]*p.x+P->val[1][1]*p.y+P->val[1][2]*p.z+P->val[1][3];
+    DOUBLE c  = P->val[2][0]*p.x+P->val[2][1]*p.y+P->val[2][2]*p.z+P->val[2][3];
+    DOUBLE cc = c*c;
        
     // check singularities
     if (cc<1e-10)
@@ -351,7 +351,7 @@ bool Reconstruction::computePredictionsAndJacobian(const vector<Matrix>::iterato
 void Reconstruction::testJacobian() {
   cout << "=================================" << endl;
   cout << "TESTING JACOBIAN" << endl;
-  FLOAT delta = 1e-5;
+  DOUBLE delta = 1e-5;
   vector<Matrix> P;
   Matrix A(3,4);
   A.setMat(K,0,0);
@@ -363,14 +363,14 @@ void Reconstruction::testJacobian() {
   P.push_back(K*A);
   cout << P[0] << endll;
   cout << P[1] << endll;
-  J         = new FLOAT[6*2];
-  p_observe = new FLOAT[2*2];
-  p_predict = new FLOAT[2*2];
+  J         = new DOUBLE[6*2];
+  p_observe = new DOUBLE[2*2];
+  p_predict = new DOUBLE[2*2];
   
   point3d p_ref(0.1,0.2,0.3);
   
-  FLOAT p_predict1[4];
-  FLOAT p_predict2[4];
+  DOUBLE p_predict1[4];
+  DOUBLE p_predict2[4];
   point3d p1 = p_ref;
    
   for (int32_t i=0; i<3; i++) {
@@ -382,9 +382,9 @@ void Reconstruction::testJacobian() {
     cout << "param1: "; cout << p1.x << " " << p1.y << " " << p1.z << endl;
     cout << "param2: "; cout << p2.x << " " << p2.y << " " << p2.z << endl;
     computePredictionsAndJacobian(P.begin(),P.end(),p1);
-    memcpy(p_predict1,p_predict,4*sizeof(FLOAT));
+    memcpy(p_predict1,p_predict,4*sizeof(DOUBLE));
     computePredictionsAndJacobian(P.begin(),P.end(),p2);
-    memcpy(p_predict2,p_predict,4*sizeof(FLOAT));
+    memcpy(p_predict2,p_predict,4*sizeof(DOUBLE));
     for (int32_t j=0; j<4; j++) {
       cout << "num: " << (p_predict2[j]-p_predict1[j])/delta;
       cout << ", ana: " << J[j*3+i] << endl;
