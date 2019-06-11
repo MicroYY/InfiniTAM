@@ -23,12 +23,16 @@ namespace ITMLib
 		
 
 	public:
-		virtual void TrackCamera(ITMTrackingState *trackingState, const ITMView *view) = 0;
+		//virtual void TrackCamera(ITMTrackingState *trackingState, const ITMView *view) = 0;
 
 		ITMMonoTracker(Vector2i imgSize_d,
 			Vector2i imgSize_rgb,
 			double focalLength,
 			double cx,
 			double cy);
+
+		bool requiresColourRendering() const { return false; }
+		bool requiresDepthReliability() const { return true; }
+		bool requiresPointCloudRendering() const { return true; }
 	};
 }
