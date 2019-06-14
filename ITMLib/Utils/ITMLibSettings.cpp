@@ -8,8 +8,8 @@ using namespace ORUtils;
 #include <cmath>
 
 ITMLibSettings::ITMLibSettings(void)
-: sceneParams(0.02f, 100, 0.005f, 0.2f, 3.0f, false),
-//	: sceneParams(0.3f, 10, 0.035f, 0.1f, 20.0f, false),
+//: sceneParams(0.02f, 100, 0.005f, 0.2f, 3.0f, false),
+	: sceneParams(0.3f, 10, 0.035f, 0.1f, 12.0f, false),
 //	: sceneParams(0.3f, 10, 0.005f, 0.1f, 12.0f, false),
 	surfelSceneParams(0.5f, 0.6f, static_cast<float>(20 * M_PI / 180), 0.01f, 0.004f, 3.5f, 25.0f, 4, 1.0f, 5.0f, 20, 10000000, true, true)
 {
@@ -60,7 +60,10 @@ ITMLibSettings::ITMLibSettings(void)
 	//	"framesToSkip=20,framesToWeight=50,failureDec=20.0";
 
 	// libviso2 tracker
-	trackerConfig = "type=mono";
+	//trackerConfig = "type=mono";
+
+	// network based tracker
+	trackerConfig = "type=network";
 
 	//// For hybrid intensity+depth tracking:
 	//trackerConfig = "type=extended,levels=bbb,useDepth=1,useColour=1,"
