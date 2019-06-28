@@ -31,13 +31,14 @@ public:
 NetworkEngine::NetworkEngine(const char * calibFilename)
 	:BaseImageSourceEngine(calibFilename)
 {
+	std::cout << std::endl << "Starting image transfer process.." << std::endl;
 	TCHAR networkProcess[] = TEXT("..\\..\\x64\\Release\\NetworkProcess.exe");
 	STARTUPINFO si = { 0 };
 	PROCESS_INFORMATION pi;
 	auto iRet = CreateProcess(networkProcess, NULL, NULL, NULL, false, NULL, NULL, NULL, &si, &pi);
 	if (iRet)
 	{
-		std::cout << "Process started." << std::endl
+		std::cout << "Image transfer process started." << std::endl
 			<< "Process ID:\t"
 			<< pi.dwProcessId << std::endl;
 	}

@@ -543,7 +543,7 @@ void UIEngine::Initialise(int & argc, char** argv, ImageSourceEngine *imageSourc
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 	glutInitWindowSize(winSize.x, winSize.y);
-	glutCreateWindow("InfiniTAM");
+	glutCreateWindow("Visualization");
 	glGenTextures(NUM_WIN, textureId);
 
 	glutDisplayFunc(UIEngine::glutDisplayFunction);
@@ -593,6 +593,26 @@ void UIEngine::Initialise(int & argc, char** argv, ImageSourceEngine *imageSourc
 	sdkResetTimer(&timer_average);
 
 	printf("initialised.\n");
+
+#ifdef VR_DISPLAY
+	TCHAR vrProcess[] = TEXT("..\\..\\x64\\Release\\VR.exe");
+	STARTUPINFO si = { 0 };
+	PROCESS_INFORMATION pi;
+	DWORD dwExitCode;
+	auto iRet = CreateProcess(vrProcess, NULL, NULL, NULL, false, NULL, NULL, NULL, &si, &pi);
+	if (iRet)
+	{
+		std::cout << "VR display process started." << std::endl
+			<< "Process ID:\t"
+			<< pi.dwProcessId << std::endl;
+	}
+	else
+	{
+		std::cout << "Cannot start process!" << std::endl
+			<< "Error code:\t" << GetLastError() << std::endl;
+	}
+#endif // VR_DISPLAY
+
 }
 
 void UIEngine::SaveScreenshot(const char *filename) const

@@ -31,5 +31,4 @@ void ITMLib::ITMMonoTracker_CPU::TrackCamera(ITMTrackingState * trackingState, c
 	memcpy(m.data, imageData, sizeof(uchar) * 1280 * 720);
 	cv::imshow("", m);
 	cv::waitKey(1);*/
-
 }

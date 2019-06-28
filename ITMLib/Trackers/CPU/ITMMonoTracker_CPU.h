@@ -2,8 +2,13 @@
 
 #pragma once
 
+  //#include <opencv2/opencv.hpp>
+
 #include "../Interface/ITMMonoTracker.h"
 #include "libviso2/viso_mono.h"
+
+
+//#pragma comment(lib, "opencv_core320.lib")
 
 namespace ITMLib
 {
