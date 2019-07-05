@@ -43,12 +43,12 @@ static void safe_glutBitmapString(void *font, const char *str)
 void UIEngine::glutDisplayFunction()
 {
 	UIEngine *uiEngine = UIEngine::Instance();
-
+	
 	// get updated images from processing thread
 	uiEngine->mainEngine->GetImage(uiEngine->outImage[0], uiEngine->outImageType[0], &uiEngine->freeviewPose, &uiEngine->freeviewIntrinsics);
 
 	for (int w = 1; w < NUM_WIN; w++) uiEngine->mainEngine->GetImage(uiEngine->outImage[w], uiEngine->outImageType[w]);
-
+	
 	// do the actual drawing
 	glClear(GL_COLOR_BUFFER_BIT);
 	glColor3f(1.0f, 1.0f, 1.0f);

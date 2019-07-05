@@ -364,8 +364,13 @@ void ITMBasicEngine<TVoxel, TIndex>::GetImage(ORUChar4Image *out, GetImageType g
 	case ITMBasicEngine::InfiniTAM_IMAGE_ORIGINAL_RGB:
 		out->ChangeDims(view->rgb->noDims);
 		if (settings->deviceType == ORUtils::DEVICE_CUDA)
+		{
 			out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CPU);
-		else out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+		}
+		else 
+		{
+			out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+		}
 		break;
 	case ITMBasicEngine::InfiniTAM_IMAGE_ORIGINAL_DEPTH:
 		out->ChangeDims(view->depth->noDims);

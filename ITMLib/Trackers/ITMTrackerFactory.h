@@ -468,7 +468,7 @@ namespace ITMLib
 	static ITMTracker *MakeMonoTracker(const Vector2i& imgSize_rgb, const Vector2i& imgSize_d, ORUtils::DeviceType deviceType, const ORUtils::KeyValueConfig & cfg,
 		const ITMLowLevelEngine *lowLevelEngine, ITMIMUCalibrator *imuCalibrator, const ITMSceneParams *sceneParams)
 	{
-		ITMMonoTracker* ret = new ITMMonoTracker_CPU(imgSize_rgb, imgSize_d, 1039.90344238281250000, 640.06604003906250000, 357.32925415039062500);
+		ITMMonoTracker* ret = new ITMMonoTracker_CPU(imgSize_rgb, imgSize_d);
 		return ret;
 	}
 

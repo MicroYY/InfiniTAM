@@ -29,7 +29,7 @@ void ITMColorTracker::TrackCamera(ITMTrackingState *trackingState, const ITMView
 		trackingState->trackerResult = ITMTrackingState::TRACKING_GOOD;
 		return;
 	}
-
+	
 	this->view = view; this->trackingState = trackingState;
 
 	this->PrepareForEvaluation(view);
