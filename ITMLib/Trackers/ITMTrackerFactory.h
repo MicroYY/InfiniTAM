@@ -9,6 +9,7 @@
 #include "CPU/ITMDepthTracker_CPU.h"
 #include "CPU/ITMExtendedTracker_CPU.h"
 #include "CPU/ITMMonoTracker_CPU.h"
+#include "CPU/ITMORBSLAM2Tracker_CPU.h"
 #include "Interface/ITMCompositeTracker.h"
 #include "Interface/ITMIMUTracker.h"
 #include "Interface/ITMFileBasedTracker.h"
@@ -61,7 +62,9 @@ namespace ITMLib
 			//! Identifies a tracker based on libviso2
 			TRACKER_MONO,
 			//! Identifies a tracker reading poses from network
-			TRACKER_NETWORK
+			TRACKER_NETWORK,
+			// Identifies a tracker based on ORB-SLAM2
+			TRACKER_ORBSLAM2
 		} TrackerType;
 
 		struct Maker {
@@ -94,6 +97,7 @@ namespace ITMLib
 			makers.push_back(Maker("forcefail", "Force fail tracker", TRACKER_FORCEFAIL, &MakeForceFailTracker));
 			makers.push_back(Maker("mono", "Mono tracker", TRACKER_MONO, &MakeMonoTracker));
 			makers.push_back(Maker("network", "Network based tracker", TRACKER_NETWORK, &MakeNetworkTracker));
+			makers.push_back(Maker("orb-slam2", "orb-slam2 based tracker", TRACKER_ORBSLAM2, &MakeORBSLAM2Tracker));
 		}
 
 	public:
@@ -479,6 +483,16 @@ namespace ITMLib
 		const ITMLowLevelEngine *lowLevelEngine, ITMIMUCalibrator *imuCalibrator, const ITMSceneParams *sceneParams)
 	{
 		return new ITMNetworkBasedTracker;
+	}
+
+	/**
+	 * \brief Makes a ORB-SLAM2 tracker.
+	 */
+	static ITMTracker* MakeORBSLAM2Tracker(const Vector2i& imgSize_rgb, const Vector2i& imgSize_d, ORUtils::DeviceType deviceType, const ORUtils::KeyValueConfig & cfg,
+		const ITMLowLevelEngine *lowLevelEngine, ITMIMUCalibrator *imuCalibrator, const ITMSceneParams *sceneParams)
+	{
+		ITMORBSLAM2Tracker* ret = new ITMORBSLAM2Tracker_CPU(imgSize_d, imgSize_rgb);
+		return ret;
 	}
 };
 }

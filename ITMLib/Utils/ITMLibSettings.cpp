@@ -60,10 +60,13 @@ ITMLibSettings::ITMLibSettings(void)
 	//	"framesToSkip=20,framesToWeight=50,failureDec=20.0";
 
 	// libviso2 tracker
-	trackerConfig = "type=mono";
+	//trackerConfig = "type=mono";
 
 	// network based tracker
 	//trackerConfig = "type=network";
+
+	// orb-slam2
+	trackerConfig = "type=orb-slam2";
 
 	//// For hybrid intensity+depth tracking:
 	//trackerConfig = "type=extended,levels=bbb,useDepth=1,useColour=1,"
