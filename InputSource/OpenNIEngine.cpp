@@ -16,8 +16,8 @@ using namespace InputSource;
 
 class EOFListener : public openni::OpenNI::DeviceStateChangedListener
 {
-	public:
-	EOFListener() : eofReached(false){}
+public:
+	EOFListener() : eofReached(false) {}
 
 	void onDeviceStateChanged(const openni::DeviceInfo*, openni::DeviceState newState)
 	{
@@ -30,12 +30,12 @@ class EOFListener : public openni::OpenNI::DeviceStateChangedListener
 
 	bool reachedEOF() const { return eofReached; }
 
-	private:
+private:
 	bool eofReached;
 };
 
 class OpenNIEngine::PrivateData {
-	public:
+public:
 	PrivateData(void) : streams(NULL) {}
 	openni::Device device;
 	openni::VideoStream depthStream, colorStream;
@@ -47,36 +47,39 @@ class OpenNIEngine::PrivateData {
 	EOFListener eofListener;
 };
 
-static openni::VideoMode findBestMode(const openni::SensorInfo *sensorInfo, int requiredResolutionX = -1, int requiredResolutionY = -1, openni::PixelFormat requiredPixelFormat = (openni::PixelFormat)-1)
+static openni::VideoMode findBestMode(const openni::SensorInfo *sensorInfo, int requiredResolutionX = -1, int requiredResolutionY = -1, openni::PixelFormat requiredPixelFormat = (openni::PixelFormat) - 1)
 {
 	const openni::Array<openni::VideoMode> & modes = sensorInfo->getSupportedVideoModes();
 	openni::VideoMode bestMode = modes[0];
 	for (int m = 0; m < modes.getSize(); ++m) {
 		//fprintf(stderr, "mode %i: %ix%i, %i %i\n", m, modes[m].getResolutionX(), modes[m].getResolutionY(), modes[m].getFps(), modes[m].getPixelFormat());
 		const openni::VideoMode & curMode = modes[m];
-		if ((requiredPixelFormat != (openni::PixelFormat)-1)&&(curMode.getPixelFormat() != requiredPixelFormat)) continue;
+		if ((requiredPixelFormat != (openni::PixelFormat) - 1) && (curMode.getPixelFormat() != requiredPixelFormat)) continue;
 
 		bool acceptAsBest = false;
-		if ((curMode.getResolutionX() == bestMode.getResolutionX())&&
-		     (curMode.getFps() > bestMode.getFps())) {
+		if ((curMode.getResolutionX() == bestMode.getResolutionX()) &&
+			(curMode.getFps() > bestMode.getFps())) {
 			acceptAsBest = true;
-		} else if ((requiredResolutionX <= 0)&&(requiredResolutionY <= 0)) {
+		}
+		else if ((requiredResolutionX <= 0) && (requiredResolutionY <= 0)) {
 			if (curMode.getResolutionX() > bestMode.getResolutionX()) {
 				acceptAsBest = true;
 			}
-		} else {
-			int diffX_cur = abs(curMode.getResolutionX()-requiredResolutionX);
-			int diffX_best = abs(bestMode.getResolutionX()-requiredResolutionX);
-			int diffY_cur = abs(curMode.getResolutionY()-requiredResolutionY);
-			int diffY_best = abs(bestMode.getResolutionY()-requiredResolutionY);
+		}
+		else {
+			int diffX_cur = abs(curMode.getResolutionX() - requiredResolutionX);
+			int diffX_best = abs(bestMode.getResolutionX() - requiredResolutionX);
+			int diffY_cur = abs(curMode.getResolutionY() - requiredResolutionY);
+			int diffY_best = abs(bestMode.getResolutionY() - requiredResolutionY);
 			if (requiredResolutionX > 0) {
 				if (diffX_cur < diffX_best) {
 					acceptAsBest = true;
 				}
-				if ((requiredResolutionY > 0)&&(diffX_cur == diffX_best)&&(diffY_cur < diffY_best)) {
+				if ((requiredResolutionY > 0) && (diffX_cur == diffX_best) && (diffY_cur < diffY_best)) {
 					acceptAsBest = true;
 				}
-			} else if (requiredResolutionY > 0) {
+			}
+			else if (requiredResolutionY > 0) {
 				if (diffY_cur < diffY_best) {
 					acceptAsBest = true;
 				}
@@ -113,10 +116,10 @@ OpenNIEngine::OpenNIEngine(const char *calibFilename, const char *deviceURI, con
 	// images from openni always come in millimeters...
 	this->calib.disparityCalib.SetStandard();
 
-	this->imageSize_d = Vector2i(0,0);
-	this->imageSize_rgb = Vector2i(0,0);
+	this->imageSize_d = Vector2i(0, 0);
+	this->imageSize_rgb = Vector2i(0, 0);
 
-	if (deviceURI==NULL) deviceURI = openni::ANY_DEVICE;
+	if (deviceURI == NULL) deviceURI = openni::ANY_DEVICE;
 
 	data = new PrivateData();
 
@@ -147,7 +150,7 @@ OpenNIEngine::OpenNIEngine(const char *calibFilename, const char *deviceURI, con
 		control->setRepeatEnabled(false);
 	}
 
-	
+
 
 	rc = data->depthStream.create(data->device, openni::SENSOR_DEPTH);
 	if (rc == openni::STATUS_OK)
@@ -221,7 +224,7 @@ OpenNIEngine::OpenNIEngine(const char *calibFilename, const char *deviceURI, con
 		std::cout << "OpenNI: No valid streams. Exiting." << std::endl;
 		return;
 	}
-	
+
 	data->streams = new openni::VideoStream*[2];
 	if (depthAvailable) data->streams[0] = &data->depthStream;
 	if (colorAvailable) data->streams[1] = &data->colorStream;
@@ -234,8 +237,8 @@ OpenNIEngine::OpenNIEngine(const char *calibFilename, const char *deviceURI, con
 			this->calib.intrinsics_d.SetFrom(
 				imageSize_d.x,
 				imageSize_d.y,
-				(float)imageSize_d.x / (2.0f * tan(h_fov/2.0f)),
-				(float)imageSize_d.y / (2.0f * tan(v_fov/2.0f)),
+				(float)imageSize_d.x / (2.0f * tan(h_fov / 2.0f)),
+				(float)imageSize_d.y / (2.0f * tan(v_fov / 2.0f)),
 				(float)imageSize_d.x / 2.0f,
 				(float)imageSize_d.y / 2.0f);
 		}
@@ -245,8 +248,8 @@ OpenNIEngine::OpenNIEngine(const char *calibFilename, const char *deviceURI, con
 			this->calib.intrinsics_rgb.SetFrom(
 				imageSize_rgb.x,
 				imageSize_rgb.y,
-				(float)imageSize_rgb.x / (2.0f * tan(h_fov/2.0f)),
-				(float)imageSize_rgb.y / (2.0f * tan(v_fov/2.0f)),
+				(float)imageSize_rgb.x / (2.0f * tan(h_fov / 2.0f)),
+				(float)imageSize_rgb.y / (2.0f * tan(v_fov / 2.0f)),
 				(float)imageSize_rgb.x / 2.0f,
 				(float)imageSize_rgb.y / 2.0f);
 		}
@@ -287,8 +290,8 @@ void OpenNIEngine::getImages(ORUChar4Image *rgbImage, ORShortImage *rawDepthImag
 	openni::Status rc = openni::OpenNI::waitForAnyStream(data->streams, waitStreamCount, &changedIndex);
 	if (rc != openni::STATUS_OK) { printf("OpenNI: Wait failed\n"); return /*false*/; }
 
-	if(depthAvailable) data->depthStream.readFrame(&data->depthFrame);
-	if(colorAvailable) data->colorStream.readFrame(&data->colorFrame);
+	if (depthAvailable) data->depthStream.readFrame(&data->depthFrame);
+	if (colorAvailable) data->colorStream.readFrame(&data->colorFrame);
 
 	if (depthAvailable && !data->depthFrame.isValid()) return;
 	if (colorAvailable && !data->colorFrame.isValid()) return;
@@ -297,11 +300,21 @@ void OpenNIEngine::getImages(ORUChar4Image *rgbImage, ORShortImage *rawDepthImag
 	if (colorAvailable)
 	{
 		const openni::RGB888Pixel* colorImagePix = (const openni::RGB888Pixel*)data->colorFrame.getData();
-		for (int i = 0; i < rgbImage->noDims.x * rgbImage->noDims.y; i++)
+		/*for (int i = 0; i < rgbImage->noDims.x * rgbImage->noDims.y; i++)
 		{
 			Vector4u newPix; openni::RGB888Pixel oldPix = colorImagePix[i];
 			newPix.x = oldPix.r; newPix.y = oldPix.g; newPix.z = oldPix.b; newPix.w = 255;
 			rgb[i] = newPix;
+		}*/
+		for (size_t i = 0; i < rgbImage->noDims.height; i++)
+		{
+			for (size_t j = 0; j < rgbImage->noDims.width; j++)
+			{
+				unsigned int index = i * rgbImage->noDims.width + j;
+				Vector4u newPix; openni::RGB888Pixel oldPix = colorImagePix[index];
+				newPix.x = oldPix.r; newPix.y = oldPix.g; newPix.z = oldPix.b; newPix.w = 255;
+				rgb[i * rgbImage->noDims.width + rgbImage->noDims.width - j] = newPix;
+			}
 		}
 	}
 	else memset(rgb, 0, rgbImage->dataSize * sizeof(Vector4u));
@@ -310,7 +323,15 @@ void OpenNIEngine::getImages(ORUChar4Image *rgbImage, ORShortImage *rawDepthImag
 	if (depthAvailable)
 	{
 		const openni::DepthPixel* depthImagePix = (const openni::DepthPixel*)data->depthFrame.getData();
-		memcpy(depth, depthImagePix, rawDepthImage->dataSize * sizeof(short));
+		//memcpy(depth, depthImagePix, rawDepthImage->dataSize * sizeof(short));
+		for (size_t i = 0; i < rawDepthImage->noDims.height; i++)
+		{
+			for (size_t j = 0; j < rawDepthImage->noDims.width; j++)
+			{
+				unsigned int index = i * rawDepthImage->noDims.width + j;
+				depth[i*rawDepthImage->noDims.width + rawDepthImage->noDims.width - j] = depthImagePix[index];
+			}
+		}
 	}
 	else memset(depth, 0, rawDepthImage->dataSize * sizeof(short));
 
@@ -324,8 +345,8 @@ void OpenNIEngine::getImages(ORUChar4Image *rgbImage, ORShortImage *rawDepthImag
 }
 
 bool OpenNIEngine::hasMoreImages(void) const { return data && !data->eofListener.reachedEOF(); }
-Vector2i OpenNIEngine::getDepthImageSize(void) const { return data ? imageSize_d : Vector2i(0,0); }
-Vector2i OpenNIEngine::getRGBImageSize(void) const { return data ? imageSize_rgb : Vector2i(0,0); }
+Vector2i OpenNIEngine::getDepthImageSize(void) const { return data ? imageSize_d : Vector2i(0, 0); }
+Vector2i OpenNIEngine::getRGBImageSize(void) const { return data ? imageSize_rgb : Vector2i(0, 0); }
 
 #else
 
@@ -339,13 +360,21 @@ OpenNIEngine::OpenNIEngine(const char *calibFilename, const char *deviceURI, con
 OpenNIEngine::~OpenNIEngine()
 {}
 void OpenNIEngine::getImages(ORUChar4Image *rgbImage, ORShortImage *rawDepthImage)
-{ return; }
+{
+	return;
+}
 bool OpenNIEngine::hasMoreImages(void) const
-{ return false; }
+{
+	return false;
+}
 Vector2i OpenNIEngine::getDepthImageSize(void) const
-{ return Vector2i(0,0); }
+{
+	return Vector2i(0, 0);
+}
 Vector2i OpenNIEngine::getRGBImageSize(void) const
-{ return Vector2i(0,0); }
+{
+	return Vector2i(0, 0);
+}
 
 #endif
 
