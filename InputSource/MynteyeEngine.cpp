@@ -33,7 +33,13 @@ MynteyeEngine::MynteyeEngine(const char * calibFilename)
 
 	mynteyed::OpenParams params(data->dev_info.index);
 	params.depth_mode = mynteyed::DepthMode::DEPTH_RAW;
+
+#ifdef VGA
+	params.stream_mode = mynteyed::StreamMode::STREAM_640x480;
+#elif HD
 	params.stream_mode = mynteyed::StreamMode::STREAM_1280x720;
+#endif // VGA
+
 	params.ir_intensity = 4;
 	params.framerate = 30;
 
@@ -47,8 +53,15 @@ MynteyeEngine::MynteyeEngine(const char * calibFilename)
 	std::cout << "Open device success" << std::endl << std::endl;
 
 	this->calib.disparityCalib.SetStandard();
+
+#ifdef VGA
+	this->imageSize_d = Vector2i(640, 480);
+	this->imageSize_rgb = Vector2i(640, 480);
+#elif HD
 	this->imageSize_d = Vector2i(1280, 720);
 	this->imageSize_rgb = Vector2i(1280, 720);
+#endif // VGA
+
 
 	this->calib.intrinsics_d = this->calib.intrinsics_rgb;
 }

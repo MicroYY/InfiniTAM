@@ -15,6 +15,7 @@
 #include "../../InputSource/FFMPEGReader.h"
 #include "../../InputSource/MynteyeEngine.h"
 #include "../../InputSource/NetworkEngine.h"
+#include "../../InputSource/Network2Engine.h"
 #include "../../ITMLib/ITMLibDefines.h"
 #include "../../ITMLib/Core/ITMBasicEngine.h"
 #include "../../ITMLib/Core/ITMBasicSurfelEngine.h"
@@ -166,6 +167,17 @@ static void CreateDefaultImageSource(ImageSourceEngine* & imageSource, IMUSource
 	{
 		printf("trying Network data acquisition\n");
 		imageSource = new NetworkEngine(calibFile);
+		if (imageSource->getDepthImageSize().x == 0)
+		{
+			delete imageSource;
+			imageSource = NULL;
+		}
+	}
+
+	if (imageSource == NULL)
+	{
+		printf("trying Network2 data acquisition\n");
+		imageSource = new Network2Engine(calibFile);
 		if (imageSource->getDepthImageSize().x == 0)
 		{
 			delete imageSource;
